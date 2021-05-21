@@ -1,3 +1,5 @@
+#!./bin/python3
+
 ## @file
 
 import config
@@ -54,6 +56,7 @@ class mainFrame(wx.Frame):
                 self.frame = frame
 
             def Notify(self):
+                self.frame.Maximize(True)
                 self.frame.Show()
         self.timer = T(self)
 
