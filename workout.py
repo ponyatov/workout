@@ -14,23 +14,10 @@ class TrayIcon(wx.adv.TaskBarIcon):
     def __init__(self, frame):
         super().__init__()
         self.frame = frame
-        self.icon = wx.Icon('static/logo.png', wx.BITMAP_TYPE_ANY)
+        self.icon = wx.Icon('static/logo.png', wx.BITMAP_TYPE_PNG)
         self.SetIcon(self.icon, tooltip=str(sys.argv))
         self.Bind(wx.adv.EVT_TASKBAR_LEFT_DOWN, self.on_left_click)
         self.Bind(wx.adv.EVT_TASKBAR_RIGHT_DOWN, self.on_right_click)
-        self.init_popup_menu()
-
-    def init_popup_menu(self):
-        def create_menu_item(menu, label, func):
-            item = wx.MenuItem(menu, -1, label)
-            menu.Bind(wx.EVT_MENU, func, id=item.GetId())
-            menu.Append(item)
-            return item
-        self.menu = wx.Menu()
-        create_menu_item(self.menu, 'Say Hello', self.on_hello)
-        self.menu.AppendSeparator()
-        create_menu_item(self.menu, 'Exit', self.on_exit)
-        return self.menu
 
     def on_exit(self, event):
         wx.CallAfter(self.Destroy)
@@ -44,25 +31,34 @@ class TrayIcon(wx.adv.TaskBarIcon):
     def on_left_click(self, event):
         print(['on_left_click', event, self])
         self.frame.Hide()
-
-        def timer():
-            time.sleep(2)
-            self.frame.Show()
-        threading.Thread(target=timer).start()
+        self.frame.timer.StartOnce(15 * 60 * 1000)
 
     def on_right_click(self, event):
         print(['on_right_click', event, self])
         self.frame.Hide()
+        self.frame.timer.Stop()
 
-# https://stackoverflow.com/questions/35542551/how-to-create-a-taskbaricon-only-application-in-wxpython
+
 class mainFrame(wx.Frame):
     def __init__(self):
         wx.Frame.__init__(self, None, wx.ID_ANY, str(sys.argv))
         self.Hide()
         self.tray = TrayIcon(self)
+        self.init_timer()
+
+    def init_timer(self):
+        class T(wx.Timer):
+            def __init__(self, frame):
+                super().__init__()
+                self.frame = frame
+
+            def Notify(self):
+                self.frame.Show()
+        self.timer = T(self)
 
 
 if __name__ == '__main__':
     app = wx.App()
     mainFrame()
+    # app.MainLoop()
     threading.Thread(target=app.MainLoop, args=[]).start()
