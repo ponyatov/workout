@@ -8,17 +8,17 @@ import threading
 
 import wx
 
-
 import wx.adv
 
 class TrayIcon(wx.adv.TaskBarIcon):
-    def __init__(self):
+    def __init__(self, frame):
         super().__init__()
-        self.icon = wx.Icon('static/hedge64x64.png', wx.BITMAP_TYPE_ANY)
+        self.frame = frame
+        self.icon = wx.Icon('static/logo.png', wx.BITMAP_TYPE_ANY)
         self.SetIcon(self.icon, tooltip=str(sys.argv))
-        # self.Bind(wx.adv.EVT_TASKBAR_LEFT_DOWN, self.on_left_down)
+        self.Bind(wx.adv.EVT_TASKBAR_LEFT_DOWN, self.on_left_click)
+        self.Bind(wx.adv.EVT_TASKBAR_RIGHT_DOWN, self.on_right_click)
         self.init_popup_menu()
-        self.Show()
 
     def init_popup_menu(self):
         def create_menu_item(menu, label, func):
@@ -41,13 +41,25 @@ class TrayIcon(wx.adv.TaskBarIcon):
     def on_click(self, event):
         print([self, 'on_click', event])
 
-    def on_left_down(self, event):
-        print('Tray icon was left-clicked.')
+    def on_left_click(self, event):
+        print(['on_left_click', event, self])
+        self.frame.Show()
+
+    def on_right_click(self, event):
+        print(['on_right_click', event, self])
+        self.frame.Hide()
+
+# https://stackoverflow.com/questions/35542551/how-to-create-a-taskbaricon-only-application-in-wxpython
+class mainFrame(wx.Frame):
+    def __init__(self):
+        wx.Frame.__init__(self, None, wx.ID_ANY, str(sys.argv))
+        self.tray = TrayIcon(self)
 
 
 if __name__ == '__main__':
     # https://stackoverflow.com/questions/34172003/tray-icon-application-in-python-icon-is-gone
     app = wx.App()
-    tray = TrayIcon()
-    app.MainLoop()
-    # threading.Thread(target=app.MainLoop, args=[]).start()
+    # tray = TrayIcon()
+    mainFrame()
+    # app.MainLoop()
+    threading.Thread(target=app.MainLoop, args=[]).start()
