@@ -14,10 +14,11 @@ import wx.adv
 class TrayIcon(wx.adv.TaskBarIcon):
     def __init__(self):
         super().__init__()
-        self.icon = wx.Icon('static/logo.png', wx.BITMAP_TYPE_PNG)
+        self.icon = wx.Icon('static/hedge64x64.png', wx.BITMAP_TYPE_ANY)
         self.SetIcon(self.icon, tooltip=str(sys.argv))
-        self.Bind(wx.adv.EVT_TASKBAR_LEFT_DOWN, self.on_left_down)
+        # self.Bind(wx.adv.EVT_TASKBAR_LEFT_DOWN, self.on_left_down)
         self.init_popup_menu()
+        self.Show()
 
     def init_popup_menu(self):
         def create_menu_item(menu, label, func):
