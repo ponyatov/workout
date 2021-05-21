@@ -2,7 +2,7 @@
 
 import config
 
-import os, sys, re
+import os, sys, time, re
 import datetime as dt
 import threading
 
@@ -43,7 +43,12 @@ class TrayIcon(wx.adv.TaskBarIcon):
 
     def on_left_click(self, event):
         print(['on_left_click', event, self])
-        self.frame.Show()
+        self.frame.Hide()
+
+        def timer():
+            time.sleep(2)
+            self.frame.Show()
+        threading.Thread(target=timer).start()
 
     def on_right_click(self, event):
         print(['on_right_click', event, self])
@@ -53,13 +58,11 @@ class TrayIcon(wx.adv.TaskBarIcon):
 class mainFrame(wx.Frame):
     def __init__(self):
         wx.Frame.__init__(self, None, wx.ID_ANY, str(sys.argv))
+        self.Hide()
         self.tray = TrayIcon(self)
 
 
 if __name__ == '__main__':
-    # https://stackoverflow.com/questions/34172003/tray-icon-application-in-python-icon-is-gone
     app = wx.App()
-    # tray = TrayIcon()
     mainFrame()
-    # app.MainLoop()
     threading.Thread(target=app.MainLoop, args=[]).start()
