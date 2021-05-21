@@ -31,7 +31,8 @@ class TrayIcon(wx.adv.TaskBarIcon):
     def on_left_click(self, event):
         print(['on_left_click', event, self])
         self.frame.Hide()
-        self.frame.timer.StartOnce(15 * 60 * 1000)
+        if not self.frame.timer.IsRunning():
+            self.frame.timer.StartOnce(15 * 60 * 1000)
 
     def on_right_click(self, event):
         print(['on_right_click', event, self])
