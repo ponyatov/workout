@@ -64,5 +64,5 @@ class mainFrame(wx.Frame):
 if __name__ == '__main__':
     app = wx.App()
     mainFrame()
-    # app.MainLoop()
-    threading.Thread(target=app.MainLoop, args=[]).start()
+    app.MainLoop()
+    # threading.Thread(target=app.MainLoop, args=[]).start()
